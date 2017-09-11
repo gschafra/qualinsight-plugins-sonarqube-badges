@@ -42,6 +42,18 @@
     <url>https://github.com/QualInsight/qualinsight-plugins-sonarqube-badges.git</url>
     <tag>HEAD</tag>
   </scm>
+  <distributionManagement>
+    <repository>
+      <id>libs-releases-local.artifactory.gdn-app.com</id>
+      <name>libs-releases-local.artifactory.gdn-app.com</name>
+      <url>https://artifactory.gdn-app.com/artifactory/libs-releases-local</url>
+    </repository>
+    <snapshotRepository>
+      <id>libs-snapshots-local.artifactory.gdn-app.com</id>
+      <name>libs-snapshots-local.artifactory.gdn-app.com</name>
+      <url>https://artifactory.gdn-app.com/artifactory/libs-snapshots-local</url>
+    </snapshotRepository>
+  </distributionManagement>
   <properties>
     <!-- License properties -->
     <license.name>QualInsight-LGPL3</license.name>
