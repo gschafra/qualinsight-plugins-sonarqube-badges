@@ -37,9 +37,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:git@github.com:QualInsight/qualinsight-plugins-sonarqube-badges.git</connection>
-    <developerConnection>scm:git:git@github.com:QualInsight/qualinsight-plugins-sonarqube-badges.git</developerConnection>
-    <url>https://github.com/QualInsight/qualinsight-plugins-sonarqube-badges.git</url>
+    <connection>scm:git:git@github.com:bliblidotcom/qualinsight-plugins-sonarqube-badges.git</connection>
+    <developerConnection>scm:git:git@github.com:bliblidotcom/qualinsight-plugins-sonarqube-badges.git</developerConnection>
+    <url>https://github.com/bliblidotcom/qualinsight-plugins-sonarqube-badges.git</url>
     <tag>HEAD</tag>
   </scm>
   <distributionManagement>
