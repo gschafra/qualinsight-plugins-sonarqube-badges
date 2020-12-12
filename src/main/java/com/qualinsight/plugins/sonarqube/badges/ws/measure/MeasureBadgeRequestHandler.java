@@ -19,13 +19,11 @@
  */
 package com.qualinsight.plugins.sonarqube.badges.ws.measure;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.collect.ImmutableList;
+import com.qualinsight.plugins.sonarqube.badges.BadgesPluginProperties;
+import com.qualinsight.plugins.sonarqube.badges.ws.SVGImageColor;
+import com.qualinsight.plugins.sonarqube.badges.ws.SVGImageTemplate;
+import com.qualinsight.plugins.sonarqube.badges.ws.gate.QualityGateBadgeRequestHandler;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,18 +32,17 @@ import org.sonar.api.server.ServerSide;
 import org.sonar.api.server.ws.Request;
 import org.sonar.api.server.ws.RequestHandler;
 import org.sonar.api.server.ws.Response;
-import org.sonarqube.ws.WsMeasures.ComponentWsResponse;
-import org.sonarqube.ws.WsMeasures.Measure;
-import org.sonarqube.ws.WsQualityGates.ProjectStatusWsResponse;
-import org.sonarqube.ws.WsQualityGates.ProjectStatusWsResponse.Condition;
-import org.sonarqube.ws.WsQualityGates.ProjectStatusWsResponse.Status;
+import org.sonarqube.ws.Measures;
+import org.sonarqube.ws.Qualitygates;
 import org.sonarqube.ws.client.*;
-import org.sonarqube.ws.client.measure.ComponentWsRequest;
-import org.sonarqube.ws.client.qualitygate.ProjectStatusWsRequest;
-import com.qualinsight.plugins.sonarqube.badges.BadgesPluginProperties;
-import com.qualinsight.plugins.sonarqube.badges.ws.SVGImageColor;
-import com.qualinsight.plugins.sonarqube.badges.ws.SVGImageTemplate;
-import com.qualinsight.plugins.sonarqube.badges.ws.gate.QualityGateBadgeRequestHandler;
+import org.sonarqube.ws.client.measures.ComponentRequest;
+import org.sonarqube.ws.client.qualitygates.ProjectStatusRequest;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {@link RequestHandler} implementation that handles measure badges requests.
@@ -124,12 +121,12 @@ public class MeasureBadgeRequestHandler implements RequestHandler {
     private MeasureHolder retrieveMeasureHolder(final WsClient wsClient, final String key, final String metric, int requestedPeriod,
                                                 Map<String, String> periodMap) {
         MeasureHolder measureHolder;
-        final ComponentWsRequest componentWsRequest = new ComponentWsRequest();
-        componentWsRequest.setComponentKey(key);
+        final ComponentRequest componentWsRequest = new ComponentRequest();
+        componentWsRequest.setComponent(key);
         componentWsRequest.setMetricKeys(ImmutableList.of(metric));
-        final ComponentWsResponse componentWsResponse = wsClient.measures()
+        final Measures.ComponentWsResponse componentWsResponse = wsClient.measures()
             .component(componentWsRequest);
-        final List<Measure> measures = componentWsResponse.getComponent()
+        final List<Measures.Measure> measures = componentWsResponse.getComponent()
             .getMeasuresList();
         if (measures.isEmpty()) {
             measureHolder = new MeasureHolder(metric);
@@ -140,15 +137,15 @@ public class MeasureBadgeRequestHandler implements RequestHandler {
     }
 
     private MeasureHolder applyQualityGateTreshold(final WsClient wsClient, final String key, final String metric, final MeasureHolder measureHolder) {
-        final ProjectStatusWsRequest projectStatusWsRequest = new ProjectStatusWsRequest();
+        final ProjectStatusRequest projectStatusWsRequest = new ProjectStatusRequest();
         projectStatusWsRequest.setProjectKey(key);
-        final ProjectStatusWsResponse projectStatusWsResponse = wsClient.qualityGates()
+        final Qualitygates.ProjectStatusResponse projectStatusWsResponse = wsClient.qualitygates()
             .projectStatus(projectStatusWsRequest);
-        final List<Condition> conditions = projectStatusWsResponse.getProjectStatus()
+        final List<Qualitygates.ProjectStatusResponse.Condition> conditions = projectStatusWsResponse.getProjectStatus()
             .getConditionsList();
-        for (final Condition condition : conditions) {
+        for (final Qualitygates.ProjectStatusResponse.Condition condition : conditions) {
             if (metric.equals(condition.getMetricKey())) {
-                final Status status = condition.getStatus();
+                final Qualitygates.ProjectStatusResponse.Status status = condition.getStatus();
                 switch (status) {
                     case ERROR:
                         measureHolder.setBackgroundColor(SVGImageColor.RED);

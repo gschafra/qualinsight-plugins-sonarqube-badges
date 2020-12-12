@@ -21,8 +21,6 @@ package com.qualinsight.plugins.sonarqube.badges.ws.gate;
 
 import com.qualinsight.plugins.sonarqube.badges.BadgesPluginProperties;
 import com.qualinsight.plugins.sonarqube.badges.ws.SVGImageTemplate;
-import java.io.InputStream;
-import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +34,9 @@ import org.sonarqube.ws.client.HttpException;
 import org.sonarqube.ws.client.WsClient;
 import org.sonarqube.ws.client.WsClientFactories;
 import org.sonarqube.ws.client.qualitygates.ProjectStatusRequest;
+
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * {@link RequestHandler} implementation that handles Quality Gate badges requests.

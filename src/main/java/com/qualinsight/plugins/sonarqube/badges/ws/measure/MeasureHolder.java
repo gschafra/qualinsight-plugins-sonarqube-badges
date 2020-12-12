@@ -24,15 +24,13 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.internal.apachecommons.lang.builder.EqualsBuilder;
+import org.sonar.api.internal.apachecommons.lang.builder.HashCodeBuilder;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
-import org.sonarqube.ws.WsMeasures.Measure;
-import org.sonarqube.ws.WsMeasures.PeriodValue;
-import org.sonarqube.ws.WsMeasures.PeriodsValue;
+import org.sonarqube.ws.Measures;
 import com.qualinsight.plugins.sonarqube.badges.ws.SVGImageColor;
 
 import static com.qualinsight.plugins.sonarqube.badges.ws.measure.MeasureBadgeMetricNameFormatter.getMetricNameWithPeriod;
@@ -64,9 +62,9 @@ public class MeasureHolder {
      *
      * @return String of metric value or <i>null</i>
      */
-    private String getPeriodValueByPeriodIndex(PeriodsValue periods, int periodIndex) {
+    private String getPeriodValueByPeriodIndex(Measures.PeriodsValue periods, int periodIndex) {
         String periodTempValue = null;
-        for (PeriodValue periodvalue : periods.getPeriodsValueList()) {
+        for (Measures.PeriodValue periodvalue : periods.getPeriodsValueList()) {
             if (periodvalue.hasIndex() && periodvalue.getIndex() == periodIndex) {
                 periodTempValue = periodvalue.getValue();
                 break;
@@ -101,7 +99,7 @@ public class MeasureHolder {
      * @param periodMap
      */
     @SuppressWarnings("unchecked")
-    public MeasureHolder(final Measure measure, int requestedPeriod, Map<String, String> periodMap) {
+    public MeasureHolder(final Measures.Measure measure, int requestedPeriod, Map<String, String> periodMap) {
         final DecimalFormat valueDf = new DecimalFormat("#.##");
         valueDf.setRoundingMode(RoundingMode.CEILING);
         final DecimalFormat periodValueDf = new DecimalFormat("+#.##;-#.##");
@@ -111,13 +109,12 @@ public class MeasureHolder {
 
         final Metric<Serializable> metric = CoreMetrics.getMetric(measure.getMetric());
 
-        String tempValue = null;
         String periodTempValue = null;
         if (measure.hasPeriods() && requestedPeriod > 0) {
             periodTempValue = this.getPeriodValueByPeriodIndex(measure.getPeriods(), requestedPeriod);
         }
-        tempValue = measure.getValue();
-        tempValue = tempValue != null && tempValue.length() > 0 ? valueDf.format(Double.parseDouble(tempValue)) : null;
+        String tempValue = measure.getValue();
+        tempValue = tempValue.length() > 0 ? valueDf.format(Double.parseDouble(tempValue)) : null;
         periodTempValue = periodTempValue != null && periodTempValue.length() > 0 ? periodValueDf.format(Double.parseDouble(periodTempValue)) : null;
 
         // Build value
